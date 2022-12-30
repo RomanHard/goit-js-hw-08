@@ -8,7 +8,7 @@ const refs = {
 };
 
 refs.form.addEventListener('submit', onFormSubmit);
-refs.textarea.addEventListener('input', onTextareaInput);
+refs.textarea.addEventListener('input', throttle(onTextareaInput, 500));
 
 populateTextarea();
 
@@ -22,7 +22,7 @@ function onFormSubmit(evt) {
 }
 
 function onTextareaInput(evt) {
-  const message = evt.currentTarget.value;
+  const message = evt.target.value;
   localStorage.setItem(STORAGE_KAY, message);
 }
 
