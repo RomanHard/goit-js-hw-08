@@ -5,17 +5,20 @@ player.on('play', function () {
   console.log('played the video!');
 });
 
-player.getVideoTitle().then(function (title) {
-  console.log('title:', title);
+player.getVideoTitle().then(function (data) {
+  localStorage.setItem(
+    'videoplayer-current-time',
+    JSON.stringify(data.seconds)
+  );
 });
 
-const onPlay = function (data) {
-  // data is an object containing properties specific to that event
+player.on('timeupdate', throttle(getCurrentPlayTime, 1000));
+
+const getSecFromStorage = () => {
+  return JSON.parse(localStorage.getItem('videoplayer-current-time'));
 };
-player.on('play', onPlay);
-
-player.on('eventName', function (data) {
-  duration: 61.857;
-  percent: 0;
-  seconds: 0;
-});
+if (localStorage.getItem('videoplayer-current-time')) {
+  player.setCurrentTime(getSecFromStorage()).then(function (seconds) {
+    console.log(`Last time you stopped video on ${second} seconds`);
+  });
+}
