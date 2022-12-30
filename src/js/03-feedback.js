@@ -1,40 +1,34 @@
 import throttle from 'lodash.throttle';
 
-const STORAGE_KAY = 'feedback-form-state';
+const LOCALSTORAGE_KEY = 'selectedFilters';
+const formEl = document.querySelector('.feedback-form');
 
-const formData = {};
+initForm();
 
-const refs = {
-  form: document.querySelector('.feedback-form'),
-  textarea: document.querySelector('.feedback-form textarea'),
-};
-
-refs.form.addEventListener('submit', onFormSubmit);
-refs.textarea.addEventListener('input', throttle(onTextareaInput, 500));
-
-refs.form.addEventListener('input', evt => {
-  formData[evt.target.name] = evt.target.value;
-});
-
-populateTextarea();
+formEl.addEventListener('submit', onFormSubmit);
+formEl.addEventListener('input', throttle(onFormInput, 500));
 
 function onFormSubmit(evt) {
   evt.preventDefault();
-
-  console.log('Отправляємо форму');
-
+  const formData = new FormData(formEl);
+  formData.forEach((value, name) => console.log(value, name));
   evt.currentTarget.reset();
-  localStorage.removeItem(STORAGE_KAY);
+  localStorage.removeItem(LOCALSTORAGE_KEY);
 }
 
-function onTextareaInput(evt) {
-  const message = evt.target.value;
-  localStorage.setItem(STORAGE_KAY, JSON.stringify(formData));
+function onFormInput(evt) {
+  let persistedFilters = localStorage.getItem(LOCALSTORAGE_KEY);
+  persistedFilters = persistedFilters ? JSON.parse(persistedFilters) : {};
+  persistedFilters[evt.target.name] = evt.target.value;
+  localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(persistedFilters));
 }
 
-function populateTextarea() {
-  const savedMessage = localStorage.getItem(STORAGE_KAY);
-  if (JSON.parse(savedMessage)) {
-    refs.textarea.value = savedMessage;
+function initForm() {
+  let persistedFilters = localStorage.getItem(LOCALSTORAGE_KEY);
+  if (persistedFilters) {
+    persistedFilters = JSON.parse(persistedFilters);
+    Object.entries(persistedFilters).forEach(([name, value]) => {
+      formEl.elements[name].value = value;
+    });
   }
 }
