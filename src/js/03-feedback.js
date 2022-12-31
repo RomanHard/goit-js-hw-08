@@ -11,7 +11,7 @@ formEl.addEventListener('input', throttle(onFormInput, 500));
 function onFormSubmit(evt) {
   evt.preventDefault();
   const formData = new FormData(formEl);
-  formData.forEach((value, name) => console.log(value, name));
+  console.log(JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)));
   evt.currentTarget.reset();
   localStorage.removeItem(LOCALSTORAGE_KEY);
 }
